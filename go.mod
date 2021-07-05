@@ -1,3 +1,5 @@
+// +heroku goVersion go1.16
+
 module subteez
 
 go 1.16
