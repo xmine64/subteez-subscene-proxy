@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/gin-gonic/gin"
@@ -211,6 +212,42 @@ func posterUrlOrNil(posterUrl string) interface{} {
 	return posterUrl
 }
 
+func isNumeric(s string) bool {
+	_, err := strconv.Atoi(s)
+	return err == nil
+}
+
+func contains(source []string, target string) bool {
+	targetLower := strings.ToLower(target)
+	for _, s := range source {
+		sLower := strings.ToLower(s)
+		if strings.Contains(targetLower, sLower) {
+			return true
+		}
+	}
+	return false
+}
+
+func normalizeFileName(fileName string, movieTitle string) string {
+	nameParts := []string{}
+	for _, part := range strings.FieldsFunc(movieTitle, func(r rune) bool {
+		return unicode.IsSpace(r) || r == '-' || r == '_'
+	}) {
+		if len(part) >= 3 && !strings.EqualFold(part, "Season") {
+			nameParts = append(nameParts, part)
+		}
+	}
+	resultParts := []string{}
+	for _, part := range strings.FieldsFunc(fileName, func(r rune) bool {
+		return unicode.IsSpace(r) || r == '.' || r == '-' || r == '_'
+	}) {
+		if (len(part) > 2 || isNumeric(part)) && !contains(nameParts, part) {
+			resultParts = append(resultParts, part)
+		}
+	}
+	return strings.Join(resultParts, " ")
+}
+
 func handleDetails(c *gin.Context) {
 	var request DetailsRequest
 	err := c.BindJSON(&request)
@@ -321,6 +358,7 @@ func handleDetails(c *gin.Context) {
 			"name":    names[i],
 			"author":  authors[i],
 			"comment": comments[i],
+			"title":   normalizeFileName(names[i], title),
 		}
 	}
 
