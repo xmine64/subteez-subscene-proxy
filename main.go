@@ -193,17 +193,17 @@ func handleSearch(c *gin.Context) {
 		counts[i] = count
 	})
 
-	result := make([]map[string]interface{}, len(titles))
+	result := []map[string]interface{}{}
 
 	for i := 0; i < len(titles); i++ {
 		if containsResult(result, ids[i]) {
 			continue
 		}
-		result[i] = map[string]interface{}{
+		result = append(result, map[string]interface{}{
 			"name":  titles[i],
 			"count": counts[i],
 			"id":    ids[i],
-		}
+		})
 	}
 
 	c.JSON(
