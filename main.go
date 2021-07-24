@@ -93,6 +93,15 @@ func getLanguageFilterString(filter []string) string {
 	return strings.Join(resultArray, ",")
 }
 
+func containsResult(results []map[string]interface{}, targetId string) bool {
+	for _, result := range results {
+		if result["id"] == targetId {
+			return true
+		}
+	}
+	return false
+}
+
 func handleSearch(c *gin.Context) {
 	var request SearchRequest
 	err := c.BindJSON(&request)
@@ -152,8 +161,8 @@ func handleSearch(c *gin.Context) {
 		return
 	}
 
-	titles := make([]string, 0)
-	ids := make([]string, 0)
+	titles := []string{}
+	ids := []string{}
 
 	html.Find("div[class=title]").Each(func(i int, s *goquery.Selection) {
 		a := s.Children().First()
@@ -187,6 +196,9 @@ func handleSearch(c *gin.Context) {
 	result := make([]map[string]interface{}, len(titles))
 
 	for i := 0; i < len(titles); i++ {
+		if containsResult(result, ids[i]) {
+			continue
+		}
 		result[i] = map[string]interface{}{
 			"name":  titles[i],
 			"count": counts[i],
