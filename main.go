@@ -28,9 +28,14 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	router.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "Subteez Server is running.")
-	})
+	router.Static("/static/", "./static/root/")
+
+	router.StaticFile("/favicon.ico", "./static/resources/favicon.ico")
+	//router.GET("/", func(c *gin.Context) {
+	//	c.Writer.WriteString("Subteez Server is running. Redirecting to home page...")
+	//})
+
+	router.StaticFile("/", "./static/root/index.html")
 
 	router.POST("/api/search", handleSearch)
 	router.POST("/api/details", handleDetails)
