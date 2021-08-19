@@ -41,6 +41,22 @@ func main() {
 	router.POST("/api/details", handleDetails)
 	router.POST("/api/download", handleDownload)
 
+	router.OPTIONS("/api/search", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Methods", "POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		c.Header("Access-Control-Max-Age", "86400")
+		c.Status(http.StatusNoContent)
+	})
+
+	router.OPTIONS("/api/details", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Method", "POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		c.Header("Access-Control-Max-Age", "86400")
+		c.Status(http.StatusNoContent)
+	})
+
 	router.Run(":" + port)
 }
 
@@ -142,6 +158,7 @@ func handleSearch(c *gin.Context) {
 	httpRequest.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	httpRequest.Header.Add("User-Agent", USER_AGENT)
 	httpRequest.Header.Add("Cookie", fmt.Sprint("LanguageFilter=", getLanguageFilterString(request.Language)))
+
 	response, err := client.Do(httpRequest)
 	if err != nil {
 		c.Error(err)
@@ -210,6 +227,8 @@ func handleSearch(c *gin.Context) {
 			"id":    ids[i],
 		})
 	}
+
+	c.Header("Access-Control-Allow-Origin", "*")
 
 	c.JSON(
 		http.StatusOK,
@@ -378,6 +397,8 @@ func handleDetails(c *gin.Context) {
 			"title":   normalizeFileName(names[i], title),
 		}
 	}
+
+	c.Header("Access-Control-Allow-Origin", "*")
 
 	c.JSON(
 		http.StatusOK,
