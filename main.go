@@ -29,6 +29,7 @@ func main() {
 	router.Use(gin.Logger())
 
 	router.Static("/static/", "./static/root/")
+	router.Static("/web/", "./static/web/")
 
 	router.StaticFile("/favicon.ico", "./static/resources/favicon.ico")
 	//router.GET("/", func(c *gin.Context) {
