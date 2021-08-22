@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 const RESOURCES = {
-  "assets/AssetManifest.json": "5a74deb24c606712a2cfd52f1bc05ac2",
+  "assets/AssetManifest.json": "db2ada8cb71c8f7df0b533bafa9751b5",
 "assets/assets/flags/ar.png": "77639fbd151ba481f6195d9db3618f37",
 "assets/assets/flags/de.png": "7f8d6f9b7693c7e148b2b33078f724a9",
 "assets/assets/flags/en.png": "6ea4094315af76d3e295e0ce618e0107",
@@ -16,17 +16,13 @@ const RESOURCES = {
 "assets/assets/flags/ru.png": "3324b62c5f8b33b672b1c24037b9f825",
 "assets/assets/flags/tr.png": "cdbc840671f0f04b778786ee83ad2deb",
 "assets/assets/flags/unknown.png": "d9dedff4626ec8c069d03248e3f9933a",
-"assets/FontManifest.json": "84b0717abfb9f5c3f16b1be9560abec2",
+"assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
 "assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
-"assets/fonts/SourceSansPro-Bold.ttf": "0d9b62a03206f739cd34b2936a5929f1",
-"assets/fonts/SourceSansPro-Regular.ttf": "5182da425f811908bed9f5b8c72fa44f",
-"assets/fonts/Vazir-Bold-WOL.ttf": "7b6048157eb62a1528d0362792e2a220",
-"assets/fonts/Vazir-WOL.ttf": "f616352842b0bb63c81c45d662f658d2",
 "assets/NOTICES": "5eb731302fd48278ac15f046046f8afd",
-"assets/pubspec.yaml": "85c5a13dec09266fa6850199a87ec04f",
-"index.html": "3364dfe580227046a13a6d2f1f69a031",
-"/": "3364dfe580227046a13a6d2f1f69a031",
-"main.dart.js": "c174af04f431370b5b81aa0e63a03e9f",
+"assets/pubspec.yaml": "d346eb1212df0d00c9a4ca05dffd4d4f",
+"index.html": "5c642b026c4cc0b2da08217a28c3ba0f",
+"/": "5c642b026c4cc0b2da08217a28c3ba0f",
+"main.dart.js": "82bd35c43850d19558a643f06e62cc5e",
 "manifest.json": "11c436e9df82c2c32a1b2c44f3704f87",
 "version.json": "3d9a64a74e02b97cfbb00d46907c3c55"
 };
