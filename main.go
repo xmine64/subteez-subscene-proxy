@@ -37,10 +37,13 @@ func main() {
 	//})
 
 	router.StaticFile("/", "./static/root/index.html")
+	router.StaticFile("/app-ads.txt", "./static/root/app-ads.txt")
 
 	router.POST("/api/search", handleSearch)
 	router.POST("/api/details", handleDetails)
 	router.POST("/api/download", handleDownload)
+
+	router.GET("/i/:id", handleBanner)
 
 	router.OPTIONS("/api/search", func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -73,6 +76,10 @@ type DetailsRequest struct {
 
 type DownloadRequest struct {
 	Id string `form:"id" json:"id" binding:"required"`
+}
+
+type BannerRequest struct {
+	Id string `uri:"id" binding:"required"`
 }
 
 const BASE_URL = "https://subscene.com"
@@ -242,11 +249,23 @@ func handleSearch(c *gin.Context) {
 
 const EMPTY_POSTER = "No Image"
 
-func posterUrlOrNil(posterUrl string) interface{} {
+func posterUrlOrNil(c *gin.Context, posterUrl string) interface{} {
 	if posterUrl == EMPTY_POSTER {
 		return nil
 	}
-	return posterUrl
+	parsedPosterUrl, err := url.Parse(posterUrl);
+	if err != nil {
+		return nil
+	}
+	var result url.URL
+	if c.Request.TLS == nil {
+		result.Scheme = "http"
+	} else {
+		result.Scheme = "https"
+	}
+	result.Host = c.Request.Host
+	result.Path = parsedPosterUrl.Path
+	return result.String()
 }
 
 func isNumeric(s string) bool {
@@ -407,7 +426,7 @@ func handleDetails(c *gin.Context) {
 			"status":    "ok",
 			"name":      title,
 			"year":      year,
-			"posterUrl": posterUrlOrNil(posterUrl),
+			"posterUrl": posterUrlOrNil(c, posterUrl),
 			"files":     files,
 		},
 	)
@@ -531,4 +550,63 @@ func handleDownload(c *gin.Context) {
 	}
 
 	c.Data(http.StatusOK, contentType, bytes)
+}
+
+func handleBanner(c *gin.Context) {
+	var request BannerRequest
+	if c.ShouldBindUri(&request) != nil {
+		c.JSON(
+			http.StatusBadRequest,
+			gin.H{
+				"status": "bad request",
+			},
+		)
+		return
+	}
+	fileUrl := fmt.Sprintf("https://i.jeded.com/i/%s",request.Id)
+
+	client := http.Client{
+		Timeout: time.Second * 10,
+	}
+	httpRequest, err := http.NewRequest(
+		http.MethodGet,
+		fileUrl,
+		nil,
+	)
+	if err != nil {
+		c.Error(err)
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"status": "server error",
+			},
+		)
+		return
+	}
+	httpRequest.Header.Add("User-Agent", USER_AGENT)
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		c.Error(err)
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"status": "server error",
+			},
+		)
+		return
+	}
+	bytes, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		c.Error(err)
+		c.JSON(
+			http.StatusInternalServerError,
+			gin.H{
+				"status": "server error",
+			},
+		)
+		return
+	}
+
+	c.Data(http.StatusOK, "", bytes)
 }
