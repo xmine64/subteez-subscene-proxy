@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 0.4.1-web+12
+version: 0.5.1-rc1-web+15
 
 details_url: https://play.google.com/store/apps/details?id=madamin.subtitles
 
@@ -29,12 +29,16 @@ dependencies:
     sdk: flutter
   dio: ^4.0.0
   html: ^0.15.0
-  provider: ^5.0.0
+  provider: ^6.0.0
   palette_generator: ^0.3.0
   shared_preferences: ^2.0.5
   intl: ^0.17.0
   yaml: ^3.1.0
   marquee: ^2.2.0
+  mutex: ^3.0.0
+
+dev_dependencies:
+  flutter_lints: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
