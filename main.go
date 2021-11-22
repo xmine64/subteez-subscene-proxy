@@ -540,7 +540,7 @@ func handleDownload(c *gin.Context) {
 
 	err := downloadSubtitle(request.Id, c)
 
-	if err != nil {
+	if err == nil {
 		return
 	}
 
