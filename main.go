@@ -43,6 +43,8 @@ func main() {
 	router.POST("/api/details", handleDetails)
 	router.POST("/api/download", handleDownload)
 
+	router.GET("/subtitles/:movieName/:language/:file", handleDirectDownload)
+
 	router.GET("/i/:id", handleBanner)
 
 	router.OPTIONS("/api/search", func(c *gin.Context) {
@@ -75,11 +77,17 @@ type DetailsRequest struct {
 }
 
 type DownloadRequest struct {
-	Id string `form:"id" json:"id" binding:"required"`
+	Id string `form:"id" json:"id" uri:"id" binding:"required"`
 }
 
 type BannerRequest struct {
 	Id string `uri:"id" binding:"required"`
+}
+
+type DirectDownloadRequest struct {
+	MovieName string `uri:"movieName" binding:"required"`
+	Language  string `uri:"language" binding:"required"`
+	FileId    int    `uri:"file" binding:"required"`
 }
 
 const BASE_URL = "https://subscene.com"
@@ -253,7 +261,7 @@ func posterUrlOrNil(c *gin.Context, posterUrl string) interface{} {
 	if posterUrl == EMPTY_POSTER {
 		return nil
 	}
-	parsedPosterUrl, err := url.Parse(posterUrl);
+	parsedPosterUrl, err := url.Parse(posterUrl)
 	if err != nil {
 		return nil
 	}
@@ -432,9 +440,95 @@ func handleDetails(c *gin.Context) {
 	)
 }
 
+type errorPageNotFound struct{}
+type errorUnexpectedResponse struct{}
+
+func (e *errorPageNotFound) Error() string {
+	return "404 Page not found."
+}
+
+func (e *errorUnexpectedResponse) Error() string {
+	return "Unexpected response from Subscene."
+}
+
+func downloadAndHostFile(address string, c *gin.Context) error {
+	client := http.Client{
+		Timeout: time.Second * 10,
+	}
+	httpRequest, err := http.NewRequest(
+		http.MethodGet,
+		address,
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	httpRequest.Header.Add("User-Agent", USER_AGENT)
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode == http.StatusNotFound {
+		return &errorPageNotFound{}
+	}
+
+	if response.StatusCode != http.StatusOK {
+		return &errorUnexpectedResponse{}
+	}
+
+	contentType := response.Header.Get("Content-Type")
+
+	bytes, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		return err
+	}
+
+	contentDisposition := response.Header.Get("Content-Disposition")
+
+	if contentDisposition != "" {
+		c.Header("Content-Disposition", contentDisposition)
+	}
+
+	c.Data(http.StatusOK, contentType, bytes)
+
+	return nil
+}
+
+func downloadSubtitle(address string, c *gin.Context) error {
+	client := http.Client{
+		Timeout: time.Second * 10,
+	}
+	httpRequest, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprint(BASE_URL, address),
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	httpRequest.Header.Add("User-Agent", USER_AGENT)
+	response, err := client.Do(httpRequest)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+	html, err := goquery.NewDocumentFromReader(response.Body)
+	if err != nil {
+		return err
+	}
+	href, exists := html.Find("a[id=\"downloadButton\"]").Attr("href")
+	if !exists {
+		return &errorPageNotFound{}
+	}
+
+	return downloadAndHostFile(fmt.Sprint(BASE_URL, href), c)
+}
+
 func handleDownload(c *gin.Context) {
 	var request DownloadRequest
-	if c.BindJSON(&request) != nil {
+	if c.Bind(&request) != nil {
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{
@@ -443,102 +537,15 @@ func handleDownload(c *gin.Context) {
 		)
 		return
 	}
-	client := http.Client{
-		Timeout: time.Second * 10,
-	}
-	httpRequest, err := http.NewRequest(
-		http.MethodGet,
-		fmt.Sprint(BASE_URL, request.Id),
-		nil,
-	)
+
+	err := downloadSubtitle(request.Id, c)
+
 	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	httpRequest.Header.Add("User-Agent", USER_AGENT)
-	response, err := client.Do(httpRequest)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	defer response.Body.Close()
-	html, err := goquery.NewDocumentFromReader(response.Body)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	href, exists := html.Find("a[id=\"downloadButton\"]").Attr("href")
-	if !exists {
-		c.Error(fmt.Errorf("can not download file: %s", request.Id))
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-	}
-	httpRequest, err = http.NewRequest(
-		http.MethodGet,
-		fmt.Sprint(BASE_URL, href),
-		nil,
-	)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	httpRequest.Header.Add("User-Agent", USER_AGENT)
-	response, err = client.Do(httpRequest)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
 		return
 	}
 
-	contentType := response.Header.Get("Content-Type")
-
-	if !strings.Contains(contentType, "application/x-zip-compressed") {
-		c.Error(fmt.Errorf("unexpected response: %s", contentType))
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-
-	bytes, err := io.ReadAll(response.Body)
-
-	if err != nil {
+	switch err.(type) {
+	default:
 		c.Error(err)
 		c.JSON(
 			http.StatusInternalServerError,
@@ -547,9 +554,15 @@ func handleDownload(c *gin.Context) {
 			},
 		)
 		return
+	case *errorPageNotFound:
+		c.JSON(
+			http.StatusNotFound,
+			gin.H{
+				"status": "not found",
+			},
+		)
+		return
 	}
-
-	c.Data(http.StatusOK, contentType, bytes)
 }
 
 func handleBanner(c *gin.Context) {
@@ -563,50 +576,72 @@ func handleBanner(c *gin.Context) {
 		)
 		return
 	}
-	fileUrl := fmt.Sprintf("https://i.jeded.com/i/%s",request.Id)
 
-	client := http.Client{
-		Timeout: time.Second * 10,
+	fileUrl := fmt.Sprintf("https://i.jeded.com/i/%s", request.Id)
+
+	err := downloadAndHostFile(fileUrl, c)
+
+	if err == nil {
+		return
 	}
-	httpRequest, err := http.NewRequest(
-		http.MethodGet,
-		fileUrl,
-		nil,
+
+	switch err.(type) {
+	default:
+		c.String(
+			http.StatusInternalServerError,
+			"500 Internal Server Error",
+			nil,
+		)
+		return
+	case *errorPageNotFound:
+		c.String(
+			http.StatusNotFound,
+			"404 Page not found.",
+			nil,
+		)
+		return
+	}
+}
+
+func handleDirectDownload(c *gin.Context) {
+	var request DirectDownloadRequest
+	err := c.ShouldBindUri(&request)
+	if err != nil {
+		c.Error(err)
+		c.String(
+			http.StatusNotFound,
+			"404 Page not found.",
+		)
+		return
+	}
+
+	fileUrl := fmt.Sprintf("/subtitles/%s/%s/%d",
+		request.MovieName,
+		request.Language,
+		request.FileId,
 	)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	httpRequest.Header.Add("User-Agent", USER_AGENT)
-	response, err := client.Do(httpRequest)
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
-		return
-	}
-	bytes, err := io.ReadAll(response.Body)
 
-	if err != nil {
-		c.Error(err)
-		c.JSON(
-			http.StatusInternalServerError,
-			gin.H{
-				"status": "server error",
-			},
-		)
+	err = downloadSubtitle(fileUrl, c)
+
+	if err == nil {
 		return
 	}
 
-	c.Data(http.StatusOK, "", bytes)
+	switch err.(type) {
+	default:
+		c.Error(err)
+		c.String(
+			http.StatusInternalServerError,
+			"500 Internal Server Error",
+			nil,
+		)
+		return
+	case *errorPageNotFound:
+		c.String(
+			http.StatusNotFound,
+			"404 Page not found.",
+			nil,
+		)
+		return
+	}
 }
