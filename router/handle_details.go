@@ -17,14 +17,19 @@ func getBannerOrNil(c *gin.Context, posterUrl string) interface{} {
 	if err != nil {
 		return nil
 	}
-	var result url.URL
-	if c.Request.TLS == nil {
-		result.Scheme = "http"
-	} else {
-		result.Scheme = "https"
+	result := url.URL{
+		Scheme: "http",
+		Host:   c.Request.Host,
+		Path:   parsedPosterUrl.Path,
 	}
-	result.Host = c.Request.Host
-	result.Path = parsedPosterUrl.Path
+	forwardedProtocol := c.Request.Header.Get("X-Forwarded-Proto")
+	if forwardedProtocol != "" {
+		result.Scheme = forwardedProtocol
+	} else {
+		if c.Request.TLS != nil {
+			result.Scheme = "https"
+		}
+	}
 	return result.String()
 }
 
