@@ -63,6 +63,28 @@ func main() {
 		c.Status(http.StatusNoContent)
 	})
 
+	router.OPTIONS("/api/download", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Method", "POST, OPTIONS")
+		c.Header("Access-Control-Allow-Headers", "Content-Type")
+		c.Header("Access-Control-Max-Age", "86400")
+		c.Status(http.StatusNoContent)
+	})
+
+	router.OPTIONS("/i/:id", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Method", "GET, OPTIONS")
+		c.Header("Access-Control-Max-Age", "86400")
+		c.Status(http.StatusNoContent)
+	})
+
+	router.OPTIONS("/subtitles/:movieName/:language/:file", func(c *gin.Context) {
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Method", "GET, OPTIONS")
+		c.Header("Access-Control-Max-Age", "86400")
+		c.Status(http.StatusNoContent)
+	})
+
 	router.Run(":" + port)
 }
 
@@ -490,6 +512,8 @@ func downloadAndHostFile(address string, c *gin.Context) error {
 	if contentDisposition != "" {
 		c.Header("Content-Disposition", contentDisposition)
 	}
+
+	c.Header("Access-Control-Allow-Origin", "*")
 
 	c.Data(http.StatusOK, contentType, bytes)
 
