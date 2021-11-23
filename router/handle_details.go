@@ -30,7 +30,7 @@ func getBannerOrNil(c *gin.Context, posterUrl string) interface{} {
 
 func handleDetails(c *gin.Context) {
 	var request subteez.SubtitleDetailsRequest
-	err := c.ShouldBindJSON(&request)
+	err := c.ShouldBind(&request)
 	if err != nil {
 		c.Error(err)
 		c.JSON(

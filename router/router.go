@@ -27,6 +27,10 @@ func InitializeAndRun(api subteez.SubteezApi, port string) {
 	router.POST("/api/details", handleDetails)
 	router.POST("/api/download", handleDownload)
 
+	router.GET("/api/search", handleSearch)
+	router.GET("/api/details", handleDetails)
+	router.GET("/api/download", handleDownload)
+
 	// direct download link
 	router.GET("/subtitles/:movieName/:language/:file", handleDirectDownload)
 

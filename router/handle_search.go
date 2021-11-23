@@ -9,7 +9,7 @@ import (
 
 func handleSearch(c *gin.Context) {
 	var request subteez.SearchRequest
-	err := c.ShouldBindJSON(&request)
+	err := c.ShouldBind(&request)
 	if err != nil {
 		c.Error(err)
 		c.JSON(

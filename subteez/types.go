@@ -1,13 +1,13 @@
 package subteez
 
 type SearchRequest struct {
-	Query    string   `form:"query" json:"query" binding:"required"`
-	Language []string `form:"lang" json:"lang" binding:"required"`
+	Query    string   `form:"query" json:"query" uri:"query" binding:"required"`
+	Language []string `form:"lang" json:"lang" uri:"lang" binding:"required"`
 }
 
 type SubtitleDetailsRequest struct {
-	ID       string   `form:"id" json:"id" binding:"required"`
-	Language []string `form:"lang" json:"lang" binding:"required"`
+	ID       string   `form:"id" json:"id" uri:"id" binding:"required"`
+	Language []string `form:"lang" json:"lang" uri:"lang" binding:"required"`
 }
 
 type SubtitleDownloadRequest struct {

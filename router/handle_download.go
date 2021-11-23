@@ -9,7 +9,7 @@ import (
 
 func handleDownload(c *gin.Context) {
 	var request subteez.SubtitleDownloadRequest
-	if c.ShouldBindJSON(&request) != nil {
+	if c.ShouldBind(&request) != nil {
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{
