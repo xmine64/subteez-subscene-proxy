@@ -1,5 +1,10 @@
 package subteez
 
+const StatusOk = "ok"
+const StatusNotFound = "not found"
+const StatusBadRequest = "bad request"
+const StatusServerError = "server error"
+
 type SearchRequest struct {
 	Query    string   `form:"query" json:"query" uri:"query" binding:"required"`
 	Language []string `form:"lang" json:"lang" uri:"lang" binding:"required"`

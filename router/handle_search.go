@@ -15,7 +15,7 @@ func handleSearch(c *gin.Context) {
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{
-				"status": "bad request",
+				"status": subteez.StatusBadRequest,
 			},
 		)
 		return
@@ -28,7 +28,7 @@ func handleSearch(c *gin.Context) {
 		c.JSON(
 			http.StatusInternalServerError,
 			gin.H{
-				"status": "server error",
+				"status": subteez.StatusServerError,
 			},
 		)
 		return

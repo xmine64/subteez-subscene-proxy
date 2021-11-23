@@ -17,7 +17,7 @@ func handleBanner(c *gin.Context) {
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{
-				"status": "bad request",
+				"status": subteez.StatusBadRequest,
 			},
 		)
 		return

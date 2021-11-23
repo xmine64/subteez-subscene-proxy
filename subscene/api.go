@@ -13,7 +13,7 @@ func (SubsceneApi) Search(request subteez.SearchRequest) (*subteez.SearchResult,
 		return nil, err
 	}
 	return &subteez.SearchResult{
-		Status: "ok",
+		Status: subteez.StatusOk,
 		Result: result,
 	}, nil
 }

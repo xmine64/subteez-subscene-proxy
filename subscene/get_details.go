@@ -139,7 +139,7 @@ func getDetails(href string, languageFilters []string) (*subteez.SubtitleDetails
 	}
 
 	return &subteez.SubtitleDetails{
-		Status: "ok",
+		Status: subteez.StatusOk,
 		Name:   title,
 		Year:   year,
 		Banner: posterUrl,

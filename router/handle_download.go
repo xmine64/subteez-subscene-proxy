@@ -13,7 +13,7 @@ func handleDownload(c *gin.Context) {
 		c.JSON(
 			http.StatusBadRequest,
 			gin.H{
-				"status": "bad request",
+				"status": subteez.StatusBadRequest,
 			},
 		)
 		return
@@ -27,14 +27,14 @@ func handleDownload(c *gin.Context) {
 			c.JSON(
 				http.StatusNotFound,
 				gin.H{
-					"status": "not found",
+					"status": subteez.StatusNotFound,
 				},
 			)
 		} else {
 			c.JSON(
 				http.StatusInternalServerError,
 				gin.H{
-					"status": "server error",
+					"status": subteez.StatusServerError,
 				},
 			)
 		}
