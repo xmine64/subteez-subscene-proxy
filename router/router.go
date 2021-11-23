@@ -19,7 +19,6 @@ func InitializeAndRun(api subteez.SubteezApi, port string) {
 		c.String(
 			http.StatusOK,
 			"Subteez server is running.",
-			nil,
 		)
 	})
 
