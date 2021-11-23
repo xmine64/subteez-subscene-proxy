@@ -14,10 +14,15 @@ type SubtitleDownloadRequest struct {
 	ID string `form:"id" json:"id" uri:"id" binding:"required"`
 }
 
-type SearchResult struct {
+type SearchResultItem struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
 	Count int    `json:"count"`
+}
+
+type SearchResult struct {
+	Status string             `json:"status"`
+	Result []SearchResultItem `json:"result"`
 }
 
 type SubtitleFile struct {

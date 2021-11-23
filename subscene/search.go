@@ -12,7 +12,7 @@ import (
 
 const searchPath = "/subtitles/searchbytitle"
 
-func containsID(results []subteez.SearchResult, target string) bool {
+func containsID(results []subteez.SearchResultItem, target string) bool {
 	for _, result := range results {
 		if result.ID == target {
 			return true
@@ -21,7 +21,7 @@ func containsID(results []subteez.SearchResult, target string) bool {
 	return false
 }
 
-func search(query string, languageFilter []string) ([]subteez.SearchResult, error) {
+func search(query string, languageFilter []string) ([]subteez.SearchResultItem, error) {
 	// create url-encoded data to send query
 	searchRequestBody := httpRequestBody{
 		urlencodedMimeType,
@@ -70,7 +70,7 @@ func search(query string, languageFilter []string) ([]subteez.SearchResult, erro
 	})
 
 	// create output
-	results := []subteez.SearchResult{}
+	results := []subteez.SearchResultItem{}
 
 	for i, href := range hrefs {
 		// ignore empty links
@@ -90,7 +90,7 @@ func search(query string, languageFilter []string) ([]subteez.SearchResult, erro
 		}
 
 		// append result to output
-		results = append(results, subteez.SearchResult{
+		results = append(results, subteez.SearchResultItem{
 			ID:    href,
 			Name:  titles[i],
 			Count: count,

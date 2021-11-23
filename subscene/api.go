@@ -7,8 +7,15 @@ import (
 
 type SubsceneApi struct{}
 
-func (SubsceneApi) Search(request subteez.SearchRequest) ([]subteez.SearchResult, error) {
-	return search(request.Query, request.Language)
+func (SubsceneApi) Search(request subteez.SearchRequest) (*subteez.SearchResult, error) {
+	result, err := search(request.Query, request.Language)
+	if err != nil {
+		return nil, err
+	}
+	return &subteez.SearchResult{
+		Status: "ok",
+		Result: result,
+	}, nil
 }
 
 func (SubsceneApi) GetDetails(request subteez.SubtitleDetailsRequest) (*subteez.SubtitleDetails, error) {
