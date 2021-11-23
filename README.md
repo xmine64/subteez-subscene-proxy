@@ -1,50 +1,28 @@
-# Subteez Server
-proxy subscene with subteez api.
+# Subteez-Subscene Proxy Server
+This is a server for Subteez that proxies content from subscene.com
+and provides them to you using Subteez API, so you can use it with
+[Subteez App](https://play.google.com/store/apps/details?id=madamin.subtitles).
 
-# go-getting-started
+It also proxies banners and subtitle files, so people with censored
+Internet (like Iranians) can use it without any problem.
 
-A barebones Go app, which can easily be deployed to Heroku.
 
-This application supports the [Getting Started with Go on Heroku](https://devcenter.heroku.com/articles/getting-started-with-go) article - check it out.
+## Using Subteez API
+Send POST requests to endpoints, with parameters as json in body.
+Responses are in json too.
 
-## Running Locally
-
-Make sure you have [Go](http://golang.org/doc/install) version 1.12 or newer and the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed.
-
-```sh
-$ git clone https://github.com/heroku/go-getting-started.git
-$ cd go-getting-started
-$ go build -o bin/go-getting-started -v . # or `go build -o bin/go-getting-started.exe -v .` in git bash
-github.com/mattn/go-colorable
-gopkg.in/bluesuncorp/validator.v5
-golang.org/x/net/context
-github.com/heroku/x/hmetrics
-github.com/gin-gonic/gin/render
-github.com/manucorporat/sse
-github.com/heroku/x/hmetrics/onload
-github.com/gin-gonic/gin/binding
-github.com/gin-gonic/gin
-github.com/heroku/go-getting-started
-$ heroku local
+```
+endpoint      | description
+--------      | -----------
+/api/search   | Search for movies or series
+/api/details  | Get details and subtitles files available for a movie or series
+/api/download | Download subtitle file
 ```
 
-Your app should now be running on [localhost:5000](http://localhost:5000/).
+You can check data structures that used for each request and response, [here](subteez/types.go).
 
-## Deploying to Heroku
+## Using custom server with Subteez App
+Go to settings and long press on Server, then you can enter your server address.
 
-```sh
-$ heroku create
-$ git push heroku main
-$ heroku open
-```
-
-or
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
-
-
-## Documentation
-
-For more information about using Go on Heroku, see these Dev Center articles:
-
-- [Go on Heroku](https://devcenter.heroku.com/categories/go)
+## License
+All server codes are available to you with [MIT License](LICENSE), except all files in [static](static/) folder.
