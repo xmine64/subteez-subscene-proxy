@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"subteez/subteez"
 
 	"github.com/gin-gonic/gin"
@@ -14,16 +15,13 @@ func InitializeAndRun(api subteez.SubteezApi, port string) {
 	router := gin.New()
 	router.Use(gin.Logger())
 
-	// static pages
-	router.Static("/static/", "./static/root/")
-	router.Static("/web/", "./static/web/")
-
-	router.StaticFile("/favicon.ico", "./static/resources/favicon.ico")
-
-	router.StaticFile("/", "./static/root/index.html")
-
-	// Admob Ad ID
-	router.StaticFile("/app-ads.txt", "./static/root/app-ads.txt")
+	router.GET("/", func(c *gin.Context) {
+		c.String(
+			http.StatusOK,
+			"Subteez server is running.",
+			nil,
+		)
+	})
 
 	// Subteez API
 	router.POST("/api/search", handleSearch)

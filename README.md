@@ -23,6 +23,3 @@ You can check data structures that used for each request and response, [here](su
 
 ## Using custom server with Subteez App
 Go to settings and long press on Server, then you can enter your server address.
-
-## License
-All server codes are available to you with [MIT License](LICENSE), except all files in [static](static/) folder.
