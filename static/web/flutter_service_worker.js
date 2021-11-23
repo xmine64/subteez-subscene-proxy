@@ -18,13 +18,13 @@ const RESOURCES = {
 "assets/assets/flags/unknown.png": "d9dedff4626ec8c069d03248e3f9933a",
 "assets/FontManifest.json": "7b2a36307916a9721811788013e65289",
 "assets/fonts/MaterialIcons-Regular.otf": "4e6447691c9509f7acdbf8a931a85ca1",
-"assets/NOTICES": "c85cc82fa6926148c0e83bd41eb0a09f",
-"assets/pubspec.yaml": "79218a89be3f1662fada3f6cc479c751",
-"index.html": "39c22476df0962c6a1974b3cfa2beda1",
-"/": "39c22476df0962c6a1974b3cfa2beda1",
-"main.dart.js": "61465055e3adc0176eadf641234133e5",
+"assets/NOTICES": "579aae63ca38dd8f887fae5b648404eb",
+"assets/pubspec.yaml": "431f5475b0305854203b2ed52f135a18",
+"index.html": "ed1ab1416b15c83a54babac4eb85e948",
+"/": "ed1ab1416b15c83a54babac4eb85e948",
+"main.dart.js": "f6b110641864a83536844b3e683460fd",
 "manifest.json": "11c436e9df82c2c32a1b2c44f3704f87",
-"version.json": "0e4e8d2cac6ed4632f76f5e394d4805e"
+"version.json": "72f2bb133d790dea947d1ef0635d3d6f"
 };
 
 // The application shell files that are downloaded before a service worker can
